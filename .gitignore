@@ -1,0 +1,6 @@
+.build/
+.swiftpm/
+SpeakTyper.app/
+*.xcodeproj/
+xcuserdata/
+.DS_Store
