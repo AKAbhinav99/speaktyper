@@ -18,3 +18,13 @@ for b in "$BIN"/*.bundle; do [ -e "$b" ] && cp -R "$b" "$APP/Contents/Resources/
 codesign --force --deep --sign - \
   --requirements '=designated => identifier "com.local.speaktyper"' "$APP"
 echo "Built $(pwd)/$APP"
+
+# ./build.sh --install  → copy into /Applications and (re)launch from there.
+if [[ "${1:-}" == "--install" ]]; then
+  pkill -x SpeakTyper 2>/dev/null || true
+  sleep 0.5
+  rm -rf "/Applications/$APP"
+  cp -R "$APP" /Applications/
+  open "/Applications/$APP"
+  echo "Installed /Applications/$APP (it registers itself to launch at login)"
+fi

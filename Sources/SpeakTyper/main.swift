@@ -19,6 +19,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
         dictation.onStatusChange = { [weak self] in self?.refreshIcon() }
         dictation.start()
+        LoginItem.sync()
 
         // Ask for Accessibility up front (needed to type into other apps).
         if !TextTyper.isTrusted { TextTyper.requestAccess() }
@@ -59,6 +60,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         sounds.state = Prefs.playSounds ? .on : .off
         menu.addItem(sounds)
 
+        if LoginItem.isInstalled {
+            let login = item("Launch at Login", #selector(toggleLaunchAtLogin))
+            login.state = LoginItem.status == .enabled ? .on : .off
+            menu.addItem(login)
+            if LoginItem.status == .requiresApproval {
+                menu.addItem(item("⚠︎ Approve in Login Items…", #selector(openLoginItems)))
+            }
+        } else {
+            let login = NSMenuItem(title: "Launch at Login (move to Applications first)", action: nil, keyEquivalent: "")
+            login.isEnabled = false
+            menu.addItem(login)
+        }
+
         if !TextTyper.isTrusted {
             menu.addItem(.separator())
             menu.addItem(item("⚠︎ Allow Accessibility (needed to type)…", #selector(openAccessibility)))
@@ -82,6 +96,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     @objc private func retryModel() { dictation.retryModelLoad() }
     @objc private func toggleTrailingSpace() { Prefs.addTrailingSpace.toggle() }
     @objc private func toggleSounds() { Prefs.playSounds.toggle() }
+    @objc private func toggleLaunchAtLogin() {
+        Prefs.launchAtLogin = LoginItem.status != .enabled
+        LoginItem.sync()
+    }
+    @objc private func openLoginItems() { LoginItem.openSettings() }
     @objc private func openAccessibility() {
         TextTyper.requestAccess()
         TextTyper.openAccessibilitySettings()

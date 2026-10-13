@@ -25,10 +25,17 @@ cd speaktyper
 ./build.sh
 ```
 This produces `SpeakTyper.app` (ad-hoc signed with a stable identifier requirement, so Mic/Accessibility
-permissions should survive rebuilds). Optionally drag it into `/Applications`.
+permissions should survive rebuilds).
+
+To install it and have it start automatically when you log in:
+```
+./build.sh --install
+```
+That copies the app to `/Applications` and launches it; on launch it registers itself as a login item
+(System Settings → General → Login Items). Turn it off any time with **Launch at Login** in the menu bar icon.
 
 ## First run
-1. `open SpeakTyper.app` — a waveform icon appears in the menu bar
+1. Launch it (`./build.sh --install` does this) — a waveform icon appears in the menu bar
 2. Allow **Accessibility** (System Settings → Privacy & Security → Accessibility) so it can type.
    Without it, text is copied to the clipboard instead.
 3. Allow **Microphone** the first time you dictate.

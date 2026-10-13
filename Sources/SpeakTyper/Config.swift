@@ -27,6 +27,11 @@ enum Prefs {
         set { d.set(newValue, forKey: "addTrailingSpace") }
     }
 
+    static var launchAtLogin: Bool {
+        get { d.object(forKey: "launchAtLogin") as? Bool ?? true }
+        set { d.set(newValue, forKey: "launchAtLogin") }
+    }
+
     static var playSounds: Bool {
         get { d.object(forKey: "playSounds") as? Bool ?? true }
         set { d.set(newValue, forKey: "playSounds") }
