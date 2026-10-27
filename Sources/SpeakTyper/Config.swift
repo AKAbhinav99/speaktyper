@@ -1,14 +1,11 @@
-import Carbon.HIToolbox
 import FluidAudio
 import Foundation
 
 /// Tweak these to change the shortcut or the Parakeet model.
 enum Config {
-    /// Global shortcut: ⌥ Space.
-    /// Tap it to start, tap again to stop — or hold it down and release to stop (push-to-talk).
-    static let hotKeyCode = UInt32(kVK_Space)
-    static let hotKeyModifiers = UInt32(optionKey)
-    static let hotKeyLabel = "⌥Space"
+    /// Trigger: the Right Option key on its own (see TriggerKey.swift).
+    /// Hold it to talk and release to type, or tap it once for hands-free and tap again to stop.
+    static let hotKeyLabel = "Right ⌥"
 
     /// Holding the shortcut longer than this turns the session into push-to-talk.
     static let pushToTalkThreshold: TimeInterval = 0.35

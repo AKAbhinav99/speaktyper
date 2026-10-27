@@ -16,7 +16,7 @@ final class DictationController {
     private let recorder = AudioRecorder()
     private let transcriber = Transcriber()
 
-    private var hotKey: HotKey?
+    private var trigger: TriggerKey?
     private var escapeKey: HotKey?
     private var hotKeyIsDown = false
     private var pressStartedAt: Date?
@@ -32,14 +32,15 @@ final class DictationController {
     }
 
     func start() {
-        hotKey = HotKey(keyCode: Config.hotKeyCode, modifiers: Config.hotKeyModifiers) { [weak self] pressed in
-            MainActor.assumeIsolated { self?.hotKeyChanged(pressed: pressed) }
+        let trigger = TriggerKey()
+        trigger.onChange = { [weak self] isDown in
+            MainActor.assumeIsolated { self?.hotKeyChanged(pressed: isDown) }
         }
+        trigger.onChord = { [weak self] in
+            MainActor.assumeIsolated { self?.triggerWasPartOfShortcut() }
+        }
+        self.trigger = trigger
         loadModel()
-
-        if hotKey?.isRegistered == false {
-            island.flash("\(Config.hotKeyLabel) is taken by another app", symbol: "keyboard", for: 3)
-        }
     }
 
     // MARK: - Model
@@ -111,6 +112,13 @@ final class DictationController {
         }
     }
 
+    /// Right ⌥ was combined with another key (e.g. ⌥E for an accent): quietly drop the session.
+    private func triggerWasPartOfShortcut() {
+        guard state == .listening, pressStartedAt != nil else { return }
+        pressStartedAt = nil
+        cancelListening()
+    }
+
     func toggleFromMenu() {
         switch state {
         case .idle: beginListening()
@@ -150,9 +158,16 @@ final class DictationController {
         state = .listening
         smoothedLevel = 0
         island.model.resetLevels()
-        island.show(.listening)
-        play("Tink")
         onStatusChange?()
+
+        // Recording starts now, but the island and sound wait a beat so a quick
+        // Right ⌥ shortcut (like ⌥E for an accent) never flashes anything.
+        let thisSession = session
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) { [weak self] in
+            guard let self, self.session == thisSession, self.state == .listening else { return }
+            self.island.show(.listening)
+            self.play("Tink")
+        }
 
         escapeKey = HotKey(keyCode: UInt32(kVK_Escape), modifiers: 0) { [weak self] pressed in
             guard pressed else { return }

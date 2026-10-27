@@ -6,9 +6,12 @@ Transcription runs fully on-device with NVIDIA **Parakeet TDT 0.6B v2** on the A
 ## Use
 | | |
 |---|---|
-| **Hold ⌥Space** | push-to-talk — release to stop & type |
-| **Tap ⌥Space** | hands-free — tap again to stop & type |
+| **Hold Right ⌥** | push-to-talk — release to stop & type |
+| **Tap Right ⌥** | hands-free — tap again to stop & type |
 | **Esc** | cancel while listening |
+
+The trigger is the right-hand Option key on its own, which almost nothing else uses. Pressing it as part of a
+shortcut (e.g. ⌥E for an accent) is ignored.
 
 A black, HUD-style dynamic island grows out of the notch only while you dictate:
 `LISTENING` + a live `00:04.2` timer beside the notch; below it, a voice orb (glowing core, radial ticks
